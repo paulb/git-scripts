@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Delete local branches not found on remote.
+# Ignores branches prefixed with `local/`.
+
+local=`git branch`
+remotes=`git branch -r`
+
+for branch in $local; do
+  # For some reason the script likes to include a file listing...
+  if [[ -f "./${branch}" || -d "./${branch}" ]]; then
+    echo "Skipping local file $branch ..."
+    continue
+  fi
+
+  if [ ${branch%/*} = "local" ]; then
+    echo "Skipping local branch $branch ..."
+    continue
+  fi
+
+  echo "Checking ${branch}"
+  found_match=0
+
+  for remote_branch in $remotes; do
+    remote_branch=${remote_branch#*/}
+    #echo "REMOTE"
+    #echo $remote_branch
+    if [[ $remote_branch != "->" && $remote_branch != "HEAD" ]]; then
+      if [[ $branch == $remote_branch ]]; then
+        found_match=1
+        break
+      fi
+    fi
+  done
+
+  if [[ $found_match == 1 ]]; then
+    echo "Local branch ${branch} exists remotely"
+  else
+    echo "Local branch ${branch} does not exist remotely.  DEL? y/n"
+    read delete_branch
+    if [[ $delete_branch == "y" ]]; then
+      echo "DELETING local branch ${branch}"
+      git branch -D $branch
+    fi
+  fi
+done

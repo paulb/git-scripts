@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# Deletes a branch on both local and remote.
+# Arguments
+# - a branch name to delete
+# - [optional] a branch name to switch to if you're on
+#              the branch you wish to delete
+
+if [ $# -lt 1 ] || [ $# -gt 2 ]; then
+  echo 1>&2 Usage: $0 branch_name [switch_branch_name]
+  exit 127
+fi
+
+branch_name=$1
+switch_branch=$2
+
+if [ -n "$(git status | egrep "On branch ${branch_name}")" ] ; then
+  if [ "$switch_branch" != "" ]; then
+    git checkout $switch_branch
+  else
+    echo "Cannot delete the branch you are on"
+    echo "Please change branches and try again"
+    exit 1
+  fi
+fi
+
+git push origin :$branch_name
+git branch -D $branch_name
