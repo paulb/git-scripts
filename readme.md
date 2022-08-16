@@ -21,6 +21,18 @@ Usage:
 - when on a the branch you wish to delete (switches to `main`)
   `git-dbranch feature/thing-1 main`
 
+## git-forward
+
+- Moves forward one commit in the git history
+  - useful when wanting to proceed one commit at a time to see
+    how changes affect your code
+  - will not attempt to move forward beyond the branch HEAD
+  - assumes `main` branch when no branch name is provided
+
+Usage:
+
+`git-forward [branch-name]`
+
 ## git-prune-local
 
 - Identifies all remote branches and compares to local

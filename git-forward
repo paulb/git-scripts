@@ -1,0 +1,31 @@
+#!/bin/bash
+
+branch="$1"
+if [ "$branch" = "" ]; then branch=main; fi
+origin_branch="origin/$branch"
+
+OLDIFS=$IFS
+IFS=$'\n'
+
+commits=($(git log $origin_branch | egrep '^commit [A-Za-z0-9]+$' | egrep -o '[A-Za-z0-9]+$'))
+prev_commits=($(git log | egrep '^commit [A-Za-z0-9]+$' | egrep -o '[A-Za-z0-9]+$'))
+current_commit=${prev_commits[0]}
+
+next_commit
+len=${#commits[@]}
+for (( i=0; i<${len}; i++ )); do
+  if [ "${commits[$i]}" = "$current_commit" ]; then break; fi
+  next_commit=${commits[$i]}
+done
+
+if [ "$next_commit" = "${commits[0]}" ]; then
+  echo "Returning to branch head ($branch)"
+  git checkout $branch
+elif [ "$next_commit" != "" ]; then
+  echo "Moving forward one commit"
+  git checkout $next_commit
+else
+  echo "Already at branch head ($branch)"
+fi
+
+IFS=$OLDIFS
