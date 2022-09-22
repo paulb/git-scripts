@@ -11,7 +11,7 @@ commits=($(git log $origin_branch | egrep '^commit [A-Za-z0-9]+$' | egrep -o '[A
 prev_commits=($(git log | egrep '^commit [A-Za-z0-9]+$' | egrep -o '[A-Za-z0-9]+$'))
 current_commit=${prev_commits[0]}
 
-next_commit
+let next_commit
 len=${#commits[@]}
 for (( i=0; i<${len}; i++ )); do
   if [ "${commits[$i]}" = "$current_commit" ]; then break; fi
